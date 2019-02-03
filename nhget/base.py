@@ -151,7 +151,7 @@ class Nhget(object):
 
   def _search(self, params):
     """
-    @param params: object
+    @param params: dict
     @return html: str
     """
     self._delay(multiple=1)
