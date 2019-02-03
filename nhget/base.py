@@ -84,9 +84,9 @@ class Nhget(object):
 
     return thumb_urls
 
-  def _delay_multiple(self, multi=1):
+  def _delay(self, multiple=1):
     delay = randint(*_DEFAULT_TIME_INTERVAL) + random()
-    delay = delay * multi
+    delay = delay * multiple
     self._msg2("sleep %0.2f" % delay)
     time.sleep(delay)
 
@@ -124,7 +124,7 @@ class Nhget(object):
       dic = matched.groupdict()
       url = _FMT_ORIGIN_IMAGE_URL.format(**dic)
 
-      self._delay_multiple(1)
+      self._delay(multiple=1)
       resp = session.get(url, stream=True)
       dic["image_num"] = int(dic["image_num"])
       imgname = "{image_num:06}.{file_ext}".format(**dic)
@@ -143,7 +143,7 @@ class Nhget(object):
     resp = self._http.get(url, **kwargs)
     return resp.text
 
-  def _process(self, gallery):
+  def _handle_gallery(self, gallery):
     """
     @param gallery: tuple
     """
@@ -153,14 +153,14 @@ class Nhget(object):
 
     self._msg2("Gallery: %s" % caption)
     self._download(caption, thumb_urls)
-    self._delay_multiple(100)
+    self._delay(multiple=100)
 
   def _search(self, params):
     """
     @param params: object
     @return html: str
     """
-    self._delay_multiple(1)
+    self._delay(multiple=1)
     html = self._visit("/search/", params=params)
     return html
 
@@ -183,4 +183,4 @@ class Nhget(object):
       html = self._search(params)
 
       for gallery in self._query_gallery(html):
-        self._process(gallery)
+        self._handle_gallery(gallery)
