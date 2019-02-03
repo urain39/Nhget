@@ -3,10 +3,9 @@ import re
 import sys
 import time
 from copy import deepcopy
-from os import path
+from random import randint, random
 from ezreq import EzReq
 from pyquery import PyQuery as pq
-from random import randint, random
 
 _DOMAIN = "nhentai.net"
 _BASE_URL = "https://" + _DOMAIN
@@ -59,11 +58,12 @@ class Nhget(object):
     @return gallery_list: list
     @description query and return gallery urls.
     """
-    dq = pq(html)
+    dq = pq(html)  # pylint: disable=invalid-name
     covers = dq(_COVER_PATH)
     captions = [
       caption.text
       for cover in covers
+        # pylint: disable=bad-continuation
         for caption in pq(cover)(_CAPTION_RELATIVE_PATH)
     ]
 
@@ -78,7 +78,7 @@ class Nhget(object):
     @return gallery_urls: list
     @description query and return thumb urls.
     """
-    dq = pq(html)
+    dq = pq(html)  # pylint: disable=invalid-name
     thumbs = dq(_THUMB_PATH)
     thumb_urls = generate_urls(thumbs, "data-src")
 
@@ -100,13 +100,13 @@ class Nhget(object):
     url_count = len(urls)
     session = self._http.session
 
-    if not path.isdir(caption):
+    if not os.path.isdir(caption):
       caption = caption.replace("/", "|")\
-                       .replace(':', '.')\
-                       .replace('*', '+')\
-                       .replace('?', '!')\
-                       .replace('<', '(')\
-                       .replace('>', ')')\
+                       .replace(":", ".")\
+                       .replace("*", "+")\
+                       .replace("?", "!")\
+                       .replace("<", "(")\
+                       .replace(">", ")")\
                        .replace("\\", "|")
       os.mkdir(caption)
 
@@ -129,7 +129,7 @@ class Nhget(object):
       dic["image_num"] = int(dic["image_num"])
       imgname = "{image_num:06}.{file_ext}".format(**dic)
 
-      with open(imgname, "wb") as fp:
+      with open(imgname, "wb") as fp:  # pylint: disable=invalid-name
         for data in resp.iter_content(chunk_size=_DEFAULT_BUFSIZE):
           fp.write(data)
 
@@ -172,6 +172,7 @@ class Nhget(object):
     @param order: str date|popular
     @description the main entry of Nhget.
     """
+    # pylint: disable=invalid-name
     for p in range(begin, end + 1):
       self._msg("page [%4d]" % p)
 
