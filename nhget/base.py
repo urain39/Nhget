@@ -12,7 +12,8 @@ _BASE_URL = "https://" + _DOMAIN
 
 _COVER_PATH = "div.container.index-container > .gallery > a.cover"
 _THUMB_PATH = "div.container#thumbnail-container > div.thumb-container > a.gallerythumb > img.lazyload[is='lazyload-image']"
-_CAPTION_RELATIVE_PATH = "div.caption"
+#_CAPTION_PATH = "div.container#bigcontainer > div#info-block > div#info > h1"
+_CAPTION_PATH = "div.container#bigcontainer > div#info-block > div#info > h2"
 
 _THUMB_SUFFIX = "t"
 _THUMB_SUBDOMAIN = "t"
@@ -55,22 +56,14 @@ class Nhget(object):
   def _query_gallery(self, html):
     """
     @param html: str
-    @return gallery_list: list
+    @return gallery_urls: list
     @description query and return gallery urls.
     """
     dq = pq(html)  # pylint: disable=invalid-name
     covers = dq(_COVER_PATH)
-    captions = [
-      caption.text
-      for cover in covers
-        # pylint: disable=bad-continuation
-        for caption in pq(cover)(_CAPTION_RELATIVE_PATH)
-    ]
-
     gallery_urls = generate_urls(covers, "href")
-    gallery_list = zip(captions, gallery_urls)
 
-    return gallery_list
+    return gallery_urls
 
   def _query_image(self, html):
     """
@@ -143,12 +136,13 @@ class Nhget(object):
     resp = self._http.get(url, **kwargs)
     return resp.text
 
-  def _handle_gallery(self, gallery):
+  def _handle_gallery(self, url):
     """
     @param gallery: tuple
     """
-    caption, url = gallery
     html = self._visit(url)
+    dq = pq(html)
+    caption = dq(_CAPTION_PATH)[0].text
     thumb_urls = self._query_image(html)
 
     self._msg2("Gallery: %s" % caption)
@@ -183,5 +177,5 @@ class Nhget(object):
       }
       html = self._search(params)
 
-      for gallery in self._query_gallery(html):
-        self._handle_gallery(gallery)
+      for gallery_url in self._query_gallery(html):
+        self._handle_gallery(gallery_url)
