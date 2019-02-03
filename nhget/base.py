@@ -26,8 +26,7 @@ _DEFAULT_HEADERS = {
   "User-Agent": "Mozilla/5.0 (Linux; Android 7.1.2; EZ01) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.99 Mobile Safari/537.36"
 }
 _DEFAULT_BUFSIZE = (1 << 20)  # 1MB
-_DEFAULT_TIME_INTERVAL = (2, 5)
-
+_DEFAULT_TIME_INTERVAL = (1, 5)
 
 def generate_urls(elems, attr="href"):
   """
@@ -85,9 +84,10 @@ class Nhget(object):
 
     return thumb_urls
 
-  def _sleep(self):
+  def _delay_multiple(self, multi=1):
     delay = randint(*_DEFAULT_TIME_INTERVAL) + random()
-    self._msg2("sleep %d" % delay)
+    delay = delay * multi
+    self._msg2("sleep %0.2f" % delay)
     time.sleep(delay)
 
   def _download(self, caption, urls):
@@ -124,7 +124,7 @@ class Nhget(object):
       dic = matched.groupdict()
       url = _FMT_ORIGIN_IMAGE_URL.format(**dic)
 
-      self._sleep()
+      self._delay_multiple(1)
       resp = session.get(url, stream=True)
       dic["image_num"] = int(dic["image_num"])
       imgname = "{image_num:06}.{file_ext}".format(**dic)
@@ -140,7 +140,6 @@ class Nhget(object):
     @params url: str
     @return html: str
     """
-    self._sleep()
     resp = self._http.get(url, **kwargs)
     return resp.text
 
@@ -154,12 +153,14 @@ class Nhget(object):
 
     self._msg2("Gallery: %s" % caption)
     self._download(caption, thumb_urls)
+    self._delay_multiple(100)
 
   def _search(self, params):
     """
     @param params: object
     @return html: str
     """
+    self._delay_multiple(1)
     html = self._visit("/search/", params=params)
     return html
 
