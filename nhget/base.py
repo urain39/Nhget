@@ -26,7 +26,7 @@ _DEFAULT_HEADERS = {
   "User-Agent": "Mozilla/5.0 (Linux; Android 7.1.2; EZ01) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.99 Mobile Safari/537.36"
 }
 _DEFAULT_BUFSIZE = (1 << 20)  # 1MB
-_DEFAULT_TIME_INTERVAL = (1, 5)
+_DEFAULT_TIME_INTERVAL = (0, 3)
 
 def generate_urls(elems, attr="href"):
   """
@@ -147,7 +147,7 @@ class Nhget(object):
 
     self._msg2("Gallery: %s" % caption)
     self._download(caption, thumb_urls)
-    self._delay(multiple=100)
+    self._delay(multiple=10)
 
   def _search(self, params):
     """
