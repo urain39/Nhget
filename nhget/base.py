@@ -136,7 +136,7 @@ class Nhget(object):
     resp = self._http.get(url, **kwargs)
     return resp.text
 
-  def _handle_gallery(self, url):
+  def handle_gallery(self, url):
     """
     @param gallery: tuple
     """
@@ -178,4 +178,4 @@ class Nhget(object):
       html = self._search(params)
 
       for gallery_url in self._query_gallery(html):
-        self._handle_gallery(gallery_url)
+        self.handle_gallery(gallery_url)
