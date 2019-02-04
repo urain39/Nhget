@@ -26,7 +26,7 @@ _DEFAULT_HEADERS = {
   "User-Agent": "Mozilla/5.0 (Linux; Android 7.1.2; EZ01) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.99 Mobile Safari/537.36"
 }
 _DEFAULT_BUFSIZE = (1 << 20)  # 1MB
-_DEFAULT_TIME_INTERVAL = (0, 5)
+_DEFAULT_TIME_INTERVAL = (0, 4)
 
 def generate_urls(elems, attr="href"):
   """
@@ -77,12 +77,11 @@ class Nhget(object):
 
     return thumb_urls
 
-  def _delay(self, multiple=1):
+  def _delay(self, multiple=5):
     if random_choice((True, False)):
       # NOTE: range is indexable
       delay = random_choice(range(*_DEFAULT_TIME_INTERVAL)) + random()
       delay = delay * multiple
-
       # b'\xf0\x9f\x96\x95'.decode("utf-8")
       self._msg2("sleep %0.2f" % delay)
       time.sleep(delay)
@@ -129,7 +128,8 @@ class Nhget(object):
 
       if (os.path.isfile(imgname) and
           imgsize and os.path.getsize(imgname) == imgsize):
-         return  # pylint: disable=bad-indentation
+         self._msg2("skip %s" % imgname)  # pylint: disable=bad-indentation
+         continue
 
       with open(imgname, "wb") as fp:  # pylint: disable=invalid-name
         for data in resp.iter_content(chunk_size=_DEFAULT_BUFSIZE):
