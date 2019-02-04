@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import os
 import re
 import sys
@@ -45,7 +47,7 @@ def generate_urls(elems, attr="href"):
 class Nhget(object):
   def __init__(self):
     self._cwd = os.getcwd()
-    self._http = EzReq(_BASE_URL, headers=deepcopy(_DEFAULT_HEADERS))
+    self._http = EzReq(_BASE_URL, headers=deepcopy(_DEFAULT_HEADERS), max_retries=3)
 
   def _msg(self, msg):
     sys.stderr.write("=> {0}\n".format(msg))
@@ -82,7 +84,7 @@ class Nhget(object):
       # NOTE: range is indexable
       delay = random_choice(range(*_DEFAULT_TIME_INTERVAL)) + random()
       delay = delay * multiple
-      # b'\xf0\x9f\x96\x95'.decode("utf-8")
+
       self._msg2("sleep %0.2f" % delay)
       time.sleep(delay)
 
@@ -91,26 +93,26 @@ class Nhget(object):
     @param urls: list
     @description download the images from thumb_urls
     """
-    url_num = 0
+    page_num = 0
     urls = list(urls)
-    url_count = len(urls)
+    page_count = len(urls)
     session = self._http.session
+    caption = caption.replace("/", "|")\
+                     .replace(":", ".")\
+                     .replace("*", "+")\
+                     .replace("?", "!")\
+                     .replace("<", "(")\
+                     .replace(">", ")")\
+                     .replace("\\", "|")
 
     if not os.path.isdir(caption):
-      caption = caption.replace("/", "|")\
-                       .replace(":", ".")\
-                       .replace("*", "+")\
-                       .replace("?", "!")\
-                       .replace("<", "(")\
-                       .replace(">", ")")\
-                       .replace("\\", "|")
       os.mkdir(caption)
 
     os.chdir(caption)
 
     for url in urls:
-      url_num += 1
-      self._msg2("[%4d / %-4d]" % (url_num, url_count))
+      page_num += 1
+      self._msg2("[%4d / %-4d]" % (page_num, page_count))
 
       matched = _RE_THUMB_IMAGE_URL.match(url)
 
@@ -129,7 +131,7 @@ class Nhget(object):
       if (os.path.isfile(imgname) and
           imgsize and os.path.getsize(imgname) == imgsize):
          self._msg2("skip %s" % imgname)  # pylint: disable=bad-indentation
-         continue
+         continue  # pylint: disable=bad-indentation
 
       with open(imgname, "wb") as fp:  # pylint: disable=invalid-name
         for data in resp.iter_content(chunk_size=_DEFAULT_BUFSIZE):
