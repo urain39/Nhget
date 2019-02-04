@@ -3,7 +3,7 @@ import re
 import sys
 import time
 from copy import deepcopy
-from random import randint, random
+from random import choice as random_choice, random
 from ezreq import EzReq
 from pyquery import PyQuery as pq
 
@@ -26,7 +26,7 @@ _DEFAULT_HEADERS = {
   "User-Agent": "Mozilla/5.0 (Linux; Android 7.1.2; EZ01) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.99 Mobile Safari/537.36"
 }
 _DEFAULT_BUFSIZE = (1 << 20)  # 1MB
-_DEFAULT_TIME_INTERVAL = (0, 3)
+_DEFAULT_TIME_INTERVAL = (0, 5)
 
 def generate_urls(elems, attr="href"):
   """
@@ -78,10 +78,14 @@ class Nhget(object):
     return thumb_urls
 
   def _delay(self, multiple=1):
-    delay = randint(*_DEFAULT_TIME_INTERVAL) + random()
-    delay = delay * multiple
-    self._msg2("sleep %0.2f" % delay)
-    time.sleep(delay)
+    if random_choice((True, False)):
+      # NOTE: range is indexable
+      delay = random_choice(range(*_DEFAULT_TIME_INTERVAL)) + random()
+      delay = delay * multiple
+
+      # b'\xf0\x9f\x96\x95'.decode("utf-8")
+      self._msg2("sleep %0.2f" % delay)
+      time.sleep(delay)
 
   def _download(self, caption, urls):
     """
@@ -121,6 +125,11 @@ class Nhget(object):
       resp = session.get(url, stream=True)
       dic["image_num"] = int(dic["image_num"])
       imgname = "{image_num:06}.{file_ext}".format(**dic)
+      imgsize = int(resp.headers.get("Content-Length", "0"))
+
+      if (os.path.isfile(imgname) and
+          imgsize and os.path.getsize(imgname) == imgsize):
+         return  # pylint: disable=bad-indentation
 
       with open(imgname, "wb") as fp:  # pylint: disable=invalid-name
         for data in resp.iter_content(chunk_size=_DEFAULT_BUFSIZE):
@@ -141,13 +150,13 @@ class Nhget(object):
     @param gallery: tuple
     """
     html = self._visit(url)
-    dq = pq(html)
+    dq = pq(html)  # pylint: disable=invalid-name
     caption = dq(_CAPTION_PATH)[0].text
     thumb_urls = self._query_image(html)
 
     self._msg2("Gallery: %s" % caption)
     self._download(caption, thumb_urls)
-    self._delay(multiple=10)
+    self._delay(multiple=2)
 
   def _search(self, params):
     """
