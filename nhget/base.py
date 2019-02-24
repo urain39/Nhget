@@ -44,8 +44,8 @@ def url_generator(elems, attr="href"):
 
 # Alias constructor of BeautifulSoup with self arguments,
 # You can modify the default parser to lxml or else here...
-def Soup(markup, features="html.parser", *args, **kwargs):
-  return BeautifulSoup(markup, features, *args, **kwargs)
+def Soup(markup, features="html.parser", **kwargs):  # pylint: disable=invalid-name
+  return BeautifulSoup(markup, features, **kwargs)
 
 
 class Nhget(object):
