@@ -1,2 +1,2 @@
-ezreq>=0.0.2
+ezreq>=0.0.4
 pyquery>=1.4.0

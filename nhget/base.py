@@ -30,7 +30,7 @@ _DEFAULT_HEADERS = {
 _DEFAULT_BUFSIZE = (1 << 20)  # 1MB
 _DEFAULT_TIME_INTERVAL = (0, 4)
 
-def generate_urls(elems, attr="href"):
+def url_generator(elems, attr="href"):
   """
   @param elems: list
   @param attr: str
@@ -63,7 +63,7 @@ class Nhget(object):
     """
     dq = pq(html)  # pylint: disable=invalid-name
     covers = dq(_COVER_PATH)
-    gallery_urls = generate_urls(covers, "href")
+    gallery_urls = url_generator(covers, "href")
 
     return gallery_urls
 
@@ -75,7 +75,7 @@ class Nhget(object):
     """
     dq = pq(html)  # pylint: disable=invalid-name
     thumbs = dq(_THUMB_PATH)
-    thumb_urls = generate_urls(thumbs, "data-src")
+    thumb_urls = url_generator(thumbs, "data-src")
 
     return thumb_urls
 
@@ -144,7 +144,7 @@ class Nhget(object):
     @params url: str
     @return html: str
     """
-    resp = self._http.get(url, **kwargs)
+    resp = self._http.visit(url, **kwargs)
     return resp.text
 
   def handle_gallery(self, url):
