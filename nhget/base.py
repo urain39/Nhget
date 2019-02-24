@@ -6,8 +6,8 @@ import sys
 import time
 from copy import deepcopy
 from random import choice as random_choice, random
-from ezreq import EzReq
-from pyquery import PyQuery as pq
+from bs4 import BeautifulSoup
+from ezreq import EzReq as HttpClient
 
 _DOMAIN = "nhentai.net"
 _BASE_URL = "https://" + _DOMAIN
@@ -37,17 +37,21 @@ def url_generator(elems, attr="href"):
   @description generator to generate urls of elements
   """
   for elem in elems:
-    if getattr(elem, "attrib", None):
-      url = elem.attrib.get(attr)
+    url = elem.get(attr)
 
-      if url:
-        yield url
+    if url:
+      yield url
+
+# Alias constructor of BeautifulSoup with self arguments,
+# You can modify the default parser to lxml or else here...
+def Soup(markup, features="html.parser", *args, **kwargs):
+  return BeautifulSoup(markup, features, *args, **kwargs)
 
 
 class Nhget(object):
   def __init__(self):
     self._cwd = os.getcwd()
-    self._http = EzReq(_BASE_URL, headers=deepcopy(_DEFAULT_HEADERS), max_retries=3)
+    self._http = HttpClient(_BASE_URL, headers=deepcopy(_DEFAULT_HEADERS), max_retries=3)
 
   def _msg(self, msg):
     sys.stderr.write("=> {0}\n".format(msg))
@@ -61,8 +65,8 @@ class Nhget(object):
     @return gallery_urls: list
     @description query and return gallery urls.
     """
-    dq = pq(html)  # pylint: disable=invalid-name
-    covers = dq(_COVER_PATH)
+    dom = Soup(html)  # pylint: disable=invalid-name
+    covers = dom.select(_COVER_PATH)
     gallery_urls = url_generator(covers, "href")
 
     return gallery_urls
@@ -73,8 +77,8 @@ class Nhget(object):
     @return gallery_urls: list
     @description query and return thumb urls.
     """
-    dq = pq(html)  # pylint: disable=invalid-name
-    thumbs = dq(_THUMB_PATH)
+    dom = Soup(html)  # pylint: disable=invalid-name
+    thumbs = dom.select(_THUMB_PATH)
     thumb_urls = url_generator(thumbs, "data-src")
 
     return thumb_urls
@@ -152,8 +156,8 @@ class Nhget(object):
     @param gallery: tuple
     """
     html = self._visit(url)
-    dq = pq(html)  # pylint: disable=invalid-name
-    caption = dq(_CAPTION_PATH)[0].text
+    dom = Soup(html)  # pylint: disable=invalid-name
+    caption = dom.select(_CAPTION_PATH)[0].text
     thumb_urls = self._query_image(html)
 
     self._msg2("Gallery: %s" % caption)
