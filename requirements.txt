@@ -1,2 +1,2 @@
-ezreq>=0.0.4
-pyquery>=1.4.0
+ezreq>=0.0.2
+beautifulsoup4>=4.7.1
