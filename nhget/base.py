@@ -42,7 +42,7 @@ def url_generator(elems, attr="href"):
     if url:
       yield url
 
-# Alias constructor of BeautifulSoup with self arguments,
+# Alias constructor of BeautifulSoup with self arguments
 # You can modify the default parser to lxml or else here...
 def Soup(markup, features="html.parser", **kwargs):  # pylint: disable=invalid-name
   return BeautifulSoup(markup, features, **kwargs)
@@ -145,7 +145,7 @@ class Nhget(object):
 
   def _visit(self, url, **kwargs):
     """
-    @params url: str
+    @param url: str
     @return html: str
     """
     resp = self._http.visit(url, **kwargs)
