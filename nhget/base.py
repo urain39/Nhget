@@ -21,11 +21,11 @@ _THUMB_SUFFIX = "t"
 _THUMB_SUBDOMAIN = "t"
 _ORIGIN_SUBDOMAIN = "i"
 
-_RE_THUMB_IMAGE_URL = re.compile(r"^(?P<protocol>(?:ht|f)tps?\:)\/\/" + _THUMB_SUBDOMAIN + r"\." + _DOMAIN + r"/galleries/(?P<gallery_id>[0-9]+)/(?P<image_num>[0-9]+)" + _THUMB_SUFFIX + r"\.(?P<file_ext>bmp|gif|jpg|png)$")
-_FMT_ORIGIN_IMAGE_URL = r"{protocol}//" + _ORIGIN_SUBDOMAIN + r"." + _DOMAIN + r"/galleries/{gallery_id}/{image_num}.{file_ext}"
+_RE_THUMB_IMAGE_URL = re.compile(r"^(?P<protocol>(?:ht|f)tps?\:)\/\/" + _THUMB_SUBDOMAIN + r"\." + _DOMAIN + r"/galleries/(?P<gallery_id>[0-9]+)/(?P<page_num>[0-9]+)" + _THUMB_SUFFIX + r"\.(?P<file_ext>bmp|gif|jpg|png)$")
+_FMT_ORIGIN_IMAGE_URL = r"{protocol}//" + _ORIGIN_SUBDOMAIN + r"." + _DOMAIN + r"/galleries/{gallery_id}/{page_num}.{file_ext}"
 
 _DEFAULT_HEADERS = {
-  "User-Agent": "Mozilla/5.0 (Linux; Android 7.1.2; EZ01) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.99 Mobile Safari/537.36"
+  "User-Agent": "Mozilla/5.0 (Linux; Android 8.1.1; uPackMan P02) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.99 Mobile Safari/537.36"  # + " (I am robot)"
 }
 _DEFAULT_BUFSIZE = (1 << 20)  # 1MB
 _DEFAULT_TIME_INTERVAL = (0, 4)
@@ -129,8 +129,8 @@ class Nhget(object):
 
       self._delay(multiple=1)
       resp = session.get(url, stream=True)
-      dic["image_num"] = int(dic["image_num"])
-      imgname = "{image_num:06}.{file_ext}".format(**dic)
+      dic["page_num"] = int(dic["page_num"])
+      imgname = "{page_num:06}.{file_ext}".format(**dic)
       imgsize = int(resp.headers.get("Content-Length", "0"))
 
       if (os.path.isfile(imgname) and
