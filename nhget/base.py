@@ -85,6 +85,7 @@ class Nhget(object):
 
   def _delay(self, multiple=5):
     if random_choice((True, False)):
+    # if random_choice((True, True, False)):
       # NOTE: range is indexable
       delay = random_choice(range(*_DEFAULT_TIME_INTERVAL)) + random()
       delay = delay * multiple
