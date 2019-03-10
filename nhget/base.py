@@ -53,6 +53,12 @@ class Nhget(object):
     self._cwd = os.getcwd()
     self._http = HttpClient(_BASE_URL, headers=deepcopy(_DEFAULT_HEADERS), max_retries=3)
 
+  def __enter__(self):
+    return self
+
+  def __exit__(self, *args, **kwargs):
+    os.chdir(self._cwd)  # Reset.
+
   def _msg(self, msg):
     sys.stderr.write("=> {0}\n".format(msg))
 
