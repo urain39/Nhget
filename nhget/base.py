@@ -30,6 +30,12 @@ _DEFAULT_HEADERS = {
 _DEFAULT_BUFSIZE = (1 << 20)  # 1MB
 _DEFAULT_TIME_INTERVAL = (0, 4)
 
+_ESCAPE_DIRNAME_TRANSLATE = str.maketrans(
+  "/:*?<>#=\\",
+  "|.+!()+_|"
+)
+
+
 def url_generator(elems, attr="href"):
   """
   @param elems: list
@@ -108,13 +114,7 @@ class Nhget(object):
     urls = list(urls)
     page_count = len(urls)
     session = self._http.session
-    caption = caption.replace("/", "|")\
-                     .replace(":", ".")\
-                     .replace("*", "+")\
-                     .replace("?", "!")\
-                     .replace("<", "(")\
-                     .replace(">", ")")\
-                     .replace("\\", "|")
+    caption = caption.translate(_ESCAPE_DIRNAME_TRANSLATE)
 
     if not os.path.isdir(caption):
       os.mkdir(caption)
