@@ -31,8 +31,8 @@ _DEFAULT_BUFSIZE = (1 << 20)  # 1MB
 _DEFAULT_TIME_INTERVAL = (0, 4)
 
 _TRANSLATE_ESCAPE_DIRNAME = str.maketrans(
-  r"/:*?<>#=\",
-  r"|.+!()+_|"
+  "/:*?<>#=\\",  # NOTE: Do not use `r` prefix here.
+  "|.+!()+_|"
 )
 
 
