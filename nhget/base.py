@@ -30,9 +30,9 @@ _DEFAULT_HEADERS = {
 _DEFAULT_BUFSIZE = (1 << 20)  # 1MB
 _DEFAULT_TIME_INTERVAL = (0, 4)
 
-_ESCAPE_DIRNAME_TRANSLATE = str.maketrans(
-  "/:*?<>#=\\",
-  "|.+!()+_|"
+_TRANSLATE_ESCAPE_DIRNAME = str.maketrans(
+  r"/:*?<>#=\",
+  r"|.+!()+_|"
 )
 
 
@@ -96,7 +96,7 @@ class Nhget(object):
     return thumb_urls
 
   def _delay(self, multiple=5):
-    if random_choice((True, False)):
+    if random_choice((True, False, False, False)):
     # if random_choice((True, True, False)):
       # NOTE: range is indexable
       delay = random_choice(range(*_DEFAULT_TIME_INTERVAL)) + random()
@@ -114,7 +114,7 @@ class Nhget(object):
     urls = list(urls)
     page_count = len(urls)
     session = self._http.session
-    caption = caption.translate(_ESCAPE_DIRNAME_TRANSLATE)
+    caption = caption.translate(_TRANSLATE_ESCAPE_DIRNAME)
 
     if not os.path.isdir(caption):
       os.mkdir(caption)
