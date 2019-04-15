@@ -8,7 +8,7 @@ from nhget import Nhget
 
 _ALIAS_EOF = r''
 _ALIAS_FINISHED = "\xe2\x95"
-_TIME_INTERVAL = 0.5
+_TIME_INTERVAL = 5
 _RE_GALLERY_URL = re.compile(r"/g/[0-9]{1,}")
 
 def do_task(queue):
@@ -29,11 +29,12 @@ def prompt():
 
 def main():
   taskQueue = Queue()
+
+  handler_thread = Thread(target=do_task, args=(taskQueue,))
+  handler_thread.start()
+
   gallery_url = prompt()
-
-  Thread(target=do_task, args=(taskQueue,)).start()
-
-  while gallery_url is not _ALIAS_EOF:
+  while True:
     if _RE_GALLERY_URL.match(gallery_url):
       taskQueue.put(gallery_url)
 

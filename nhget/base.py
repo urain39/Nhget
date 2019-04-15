@@ -5,7 +5,7 @@ import re
 import sys
 import time
 from copy import deepcopy
-from random import choice as random_choice, random
+from random import choice as choice, random, randrange
 from bs4 import BeautifulSoup
 from ezreq import EzReq as HttpClient
 
@@ -28,7 +28,7 @@ _DEFAULT_HEADERS = {
   "User-Agent": "Mozilla/5.0 (Linux; Android 8.1.1; uPackMan P02) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.99 Mobile Safari/537.36"  # + " (I am robot)"
 }
 _DEFAULT_BUFSIZE = (1 << 20)  # 1MB
-_DEFAULT_TIME_INTERVAL = (0, 4)
+_DEFAULT_TIME_INTERVAL = (0, 1)
 
 _TRANSLATE_ESCAPE_DIRNAME = str.maketrans(
   "/:*?<>#=\\",  # NOTE: Do not use `r` prefix here.
@@ -96,10 +96,10 @@ class Nhget(object):
     return thumb_urls
 
   def _delay(self, multiple=5):
-    if random_choice((True, False, False, False)):
-    # if random_choice((True, True, False)):
+    if choice((True, False, False, False)):
+    # if choice((True, True, False)):
       # NOTE: range is indexable
-      delay = random_choice(range(*_DEFAULT_TIME_INTERVAL)) + random()
+      delay = choice(range(*_DEFAULT_TIME_INTERVAL)) + random()
       delay = delay * multiple
 
       self._msg2("sleep %0.2f" % delay)
@@ -110,9 +110,9 @@ class Nhget(object):
     @param urls: list
     @description download the images from thumb_urls
     """
-    page_num = 0
     urls = list(urls)
     page_count = len(urls)
+    curr_count = 0  # for display
     session = self._http.session
     caption = caption.translate(_TRANSLATE_ESCAPE_DIRNAME)
 
@@ -121,16 +121,18 @@ class Nhget(object):
 
     os.chdir(caption)
 
-    for url in urls:
-      page_num += 1
-      self._msg2("[%4d / %-4d]" % (page_num, page_count))
-
+    while len(urls) > 0:
+      idx = randrange(0, len(urls))
+      url = urls.pop(idx)
       matched = _RE_THUMB_IMAGE_URL.match(url)
+      curr_count += 1
 
       if not matched:
         continue
 
       dic = matched.groupdict()
+      page_num = int(dic["page_num"])
+      self._msg2("[%4d / %-4d]" % (curr_count, page_count))
       url = _FMT_ORIGIN_IMAGE_URL.format(**dic)
 
       self._delay(multiple=1)
