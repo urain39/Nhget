@@ -151,7 +151,7 @@ class Nhget(object):
          continue
 
       is_wait = True
-      resp = session.get(url, stream=True)
+      resp = session.get(url, stream=True, timeout=_DEFAULT_TIMEOUT)
       with open(imgname, "wb") as fp:  # pylint: disable=invalid-name
         for data in resp.iter_content(chunk_size=_DEFAULT_BUFSIZE):
           fp.write(data)
