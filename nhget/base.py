@@ -27,6 +27,7 @@ _FMT_ORIGIN_IMAGE_URL = r"{protocol}//" + _ORIGIN_SUBDOMAIN + r"." + _DOMAIN + r
 _DEFAULT_HEADERS = {
   "User-Agent": "Mozilla/5.0 (Linux; Android 8.1.1; uPackMan P02) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.99 Mobile Safari/537.36"  # + " (I am robot)"
 }
+_DEFAULT_TIMEOUT = 60
 _DEFAULT_BUFSIZE = (1 << 20)  # 1MB
 _DEFAULT_TIME_INTERVAL = (0, 5)
 
