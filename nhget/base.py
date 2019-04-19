@@ -59,6 +59,9 @@ class Nhget(object):
     self._cwd = os.getcwd()
     self._http = HttpClient(_BASE_URL, headers=deepcopy(_DEFAULT_HEADERS), max_retries=3)
 
+    # Simulate Browser
+    self._http.session.get("{0}/favicon.ico".format(_BASE_URL))
+
   def __enter__(self):
     return self
 
