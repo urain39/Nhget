@@ -28,7 +28,7 @@ _DEFAULT_HEADERS = {
   "User-Agent": "Mozilla/5.0 (Linux; Android 8.1.1; uPackMan P02) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.99 Mobile Safari/537.36"  # + " (I am robot)"
 }
 _DEFAULT_BUFSIZE = (1 << 20)  # 1MB
-_DEFAULT_TIME_INTERVAL = (0, 1)
+_DEFAULT_TIME_INTERVAL = (0, 5)
 
 _TRANSLATE_ESCAPE_DIRNAME = str.maketrans(
   "/:*?<>#=\\",  # NOTE: Do not use `r` prefix here.

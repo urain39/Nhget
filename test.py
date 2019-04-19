@@ -1,4 +1,4 @@
 from nhget import Nhget
 
-N = Nhget()
-N.run("decensored", 1, 1)
+with Nhget() as N:
+  N.run("decensored english", 1, 1)
