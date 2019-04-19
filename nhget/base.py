@@ -98,15 +98,15 @@ class Nhget(object):
 
     return thumb_urls
 
-  def _delay(self, multiple=5):
+  def _wait(self, multiple=1):
     if choice((True, False, False, False)):
     # if choice((True, True, False)):
       # NOTE: range is indexable
-      delay = choice(range(*_DEFAULT_TIME_INTERVAL)) + random()
-      delay = delay * multiple
+      wait_time = choice(range(*_DEFAULT_TIME_INTERVAL)) + random()
+      wait_time = wait_time * multiple
 
-      self._msg2("sleep %0.2f" % delay)
-      time.sleep(delay)
+      self._msg2("sleep %0.2f" % wait_time)
+      time.sleep(wait_time)
 
   def _download(self, caption, urls):
     """
@@ -124,6 +124,7 @@ class Nhget(object):
 
     os.chdir(caption)
 
+    is_wait = True
     while len(urls) > 0:
       idx = randrange(0, len(urls))
       url = urls.pop(idx)
@@ -138,17 +139,19 @@ class Nhget(object):
       self._msg2("[%4d / %-4d]" % (curr_count, page_count))
       url = _FMT_ORIGIN_IMAGE_URL.format(**dic)
 
-      self._delay(multiple=1)
-      resp = session.get(url, stream=True)
+      if is_wait:
+        self._wait(multiple=1)
+
       dic["page_num"] = int(dic["page_num"])
       imgname = "{page_num:06}.{file_ext}".format(**dic)
-      imgsize = int(resp.headers.get("Content-Length", "0"))
 
-      if (os.path.isfile(imgname) and
-          imgsize and os.path.getsize(imgname) == imgsize):
-         self._msg2("skip %s" % imgname)  # pylint: disable=bad-indentation
-         continue  # pylint: disable=bad-indentation
+      if os.path.isfile(imgname):
+         self._msg2("skip %s" % imgname)
+         is_wait = False
+         continue
 
+      is_wait = True
+      resp = session.get(url, stream=True)
       with open(imgname, "wb") as fp:  # pylint: disable=invalid-name
         for data in resp.iter_content(chunk_size=_DEFAULT_BUFSIZE):
           fp.write(data)
@@ -174,14 +177,14 @@ class Nhget(object):
 
     self._msg2("Gallery: %s" % caption)
     self._download(caption, thumb_urls)
-    self._delay(multiple=2)
+    self._wait(multiple=2)
 
   def _search(self, params):
     """
     @param params: dict
     @return html: str
     """
-    self._delay(multiple=1)
+    self._wait(multiple=1)
     html = self._visit("/search/", params=params)
     return html
 
