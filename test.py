@@ -9,6 +9,7 @@ def retry_when(errors):
   return retry(errors, 9999, lambda cnt:
                (
                  sleep(1000 * random()),
+                 N.__exit__()  # reset
                )
          )
 
