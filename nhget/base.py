@@ -5,7 +5,7 @@ import re
 import sys
 import time
 from copy import deepcopy
-from random import choice as random_choice, random
+from random import choice as choice, random, randrange
 from bs4 import BeautifulSoup
 from ezreq import EzReq as HttpClient
 
@@ -27,11 +27,12 @@ _FMT_ORIGIN_IMAGE_URL = r"{protocol}//" + _ORIGIN_SUBDOMAIN + r"." + _DOMAIN + r
 _DEFAULT_HEADERS = {
   "User-Agent": "Mozilla/5.0 (Linux; Android 8.1.1; uPackMan P02) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.99 Mobile Safari/537.36"  # + " (I am robot)"
 }
+_DEFAULT_TIMEOUT = 60
 _DEFAULT_BUFSIZE = (1 << 20)  # 1MB
-_DEFAULT_TIME_INTERVAL = (0, 4)
+_DEFAULT_TIME_INTERVAL = (0, 5)
 
-_ESCAPE_DIRNAME_TRANSLATE = str.maketrans(
-  "/:*?<>#=\\",
+_TRANSLATE_ESCAPE_DIRNAME = str.maketrans(
+  "/:*?<>#=\\",  # NOTE: Do not use `r` prefix here.
   "|.+!()+_|"
 )
 
@@ -58,6 +59,9 @@ class Nhget(object):
   def __init__(self):
     self._cwd = os.getcwd()
     self._http = HttpClient(_BASE_URL, headers=deepcopy(_DEFAULT_HEADERS), max_retries=3)
+
+    # Simulate Browser
+    self._http.session.get("{0}/favicon.ico".format(_BASE_URL))
 
   def __enter__(self):
     return self
@@ -95,55 +99,60 @@ class Nhget(object):
 
     return thumb_urls
 
-  def _delay(self, multiple=5):
-    if random_choice((True, False)):
-    # if random_choice((True, True, False)):
+  def _wait(self, multiple=1):
+    if choice((True, False, False, False)):
+    # if choice((True, True, False)):
       # NOTE: range is indexable
-      delay = random_choice(range(*_DEFAULT_TIME_INTERVAL)) + random()
-      delay = delay * multiple
+      wait_time = choice(range(*_DEFAULT_TIME_INTERVAL)) + random()
+      wait_time = wait_time * multiple
 
-      self._msg2("sleep %0.2f" % delay)
-      time.sleep(delay)
+      self._msg2("sleep %0.2f" % wait_time)
+      time.sleep(wait_time)
 
   def _download(self, caption, urls):
     """
     @param urls: list
     @description download the images from thumb_urls
     """
-    page_num = 0
     urls = list(urls)
     page_count = len(urls)
+    curr_count = 0  # for display
     session = self._http.session
-    caption = caption.translate(_ESCAPE_DIRNAME_TRANSLATE)
+    caption = caption.translate(_TRANSLATE_ESCAPE_DIRNAME)
 
     if not os.path.isdir(caption):
       os.mkdir(caption)
 
     os.chdir(caption)
 
-    for url in urls:
-      page_num += 1
-      self._msg2("[%4d / %-4d]" % (page_num, page_count))
-
+    is_wait = True
+    while len(urls) > 0:
+      idx = randrange(0, len(urls))
+      url = urls.pop(idx)
       matched = _RE_THUMB_IMAGE_URL.match(url)
+      curr_count += 1
 
       if not matched:
         continue
 
       dic = matched.groupdict()
+      page_num = int(dic["page_num"])
+      self._msg2("[%4d / %-4d]" % (curr_count, page_count))
       url = _FMT_ORIGIN_IMAGE_URL.format(**dic)
 
-      self._delay(multiple=1)
-      resp = session.get(url, stream=True)
+      if is_wait:
+        self._wait(multiple=1)
+
       dic["page_num"] = int(dic["page_num"])
       imgname = "{page_num:06}.{file_ext}".format(**dic)
-      imgsize = int(resp.headers.get("Content-Length", "0"))
 
-      if (os.path.isfile(imgname) and
-          imgsize and os.path.getsize(imgname) == imgsize):
-         self._msg2("skip %s" % imgname)  # pylint: disable=bad-indentation
-         continue  # pylint: disable=bad-indentation
+      if os.path.isfile(imgname):
+         self._msg2("skip %s" % imgname)
+         is_wait = False
+         continue
 
+      is_wait = True
+      resp = session.get(url, stream=True, timeout=_DEFAULT_TIMEOUT)
       with open(imgname, "wb") as fp:  # pylint: disable=invalid-name
         for data in resp.iter_content(chunk_size=_DEFAULT_BUFSIZE):
           fp.write(data)
@@ -169,14 +178,14 @@ class Nhget(object):
 
     self._msg2("Gallery: %s" % caption)
     self._download(caption, thumb_urls)
-    self._delay(multiple=2)
+    self._wait(multiple=2)
 
   def _search(self, params):
     """
     @param params: dict
     @return html: str
     """
-    self._delay(multiple=1)
+    self._wait(multiple=1)
     html = self._visit("/search/", params=params)
     return html
 
