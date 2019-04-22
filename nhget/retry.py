@@ -1,11 +1,11 @@
-from inspect import ismethod
 from functools import wraps
 
-def retry(errors, max_count=3, callback=None):
+def retry(errors, max_count=3, callback=None, is_method=False):
   """
   @param errors: any class which based on `Exception`
   @param max_count: optional, the max retry count
   @param callback: optional, be called with `retry count` before retry
+  @param is_method: optional, useful when you want to wrap a method
 
   Examples:
     @retry(ZeroDivisionError, 3,
@@ -26,17 +26,10 @@ def retry(errors, max_count=3, callback=None):
   def fn_wrapper(fn):
     @wraps(fn)
     def wrapped_fn(*args, **kwargs):
-      self = None
       result = None
-      is_method = False
 
-      if len(args) > 0: # pylint: disable=len-as-condition
-        # The applied wrapped_fn
-        _fn = getattr(args[0], fn.__name__, None)
-
-        if ismethod(_fn):
-          self = args[0]
-          is_method = True
+      if is_method:
+        self = args[0]
 
       while True:
         try:

@@ -46,7 +46,7 @@ def retry_when(errors):
     time.sleep(_DEFAULT_TIME_INTERVAL * random())
     self.__exit__()  # Reset
 
-  return retry(errors, 0xffff, handler)
+  return retry(errors, 0xffff, handler, True)
 
 def url_generator(elems, attr="href"):
   """
