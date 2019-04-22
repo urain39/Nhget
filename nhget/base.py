@@ -43,7 +43,7 @@ _TRANSLATE_ESCAPE_DIRNAME = str.maketrans(
 
 def retry_when(errors):
   def handler(self, cnt, err):
-    sleep(_DEFAULT_TIME_INTERVAL * random())
+    time.sleep(_DEFAULT_TIME_INTERVAL * random())
     self.__exit__()  # Reset
 
   return retry(errors, 0xffff, handler)
