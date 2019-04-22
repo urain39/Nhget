@@ -49,6 +49,9 @@ def url_generator(elems, attr="href"):
     if url:
       yield url
 
+def yes_or_no(n, cnt):
+  return randrange(0, cnt) < n
+
 # Alias constructor of BeautifulSoup with self arguments
 # You can modify the default parser to lxml or else here...
 def Soup(markup, features="html.parser", **kwargs):  # pylint: disable=invalid-name
@@ -100,8 +103,7 @@ class Nhget(object):
     return thumb_urls
 
   def _wait(self, multiple=1):
-    # 66% to choice waiting
-    if randrange(0, 3) in (0, 1):
+    if yes_or_no(2, 9):
       # NOTE: range is indexable
       wait_time = _DEFAULT_TIME_INTERVAL * random()
       wait_time = wait_time * multiple
