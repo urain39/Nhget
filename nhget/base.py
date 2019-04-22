@@ -7,7 +7,11 @@ import time
 from copy import deepcopy
 from random import random, randrange
 from bs4 import BeautifulSoup
+from requests.exceptions import RequestException
 from ezreq import EzReq as HttpClient
+
+from .retry import retry
+
 
 _DOMAIN = "nhentai.net"
 _BASE_URL = "https://" + _DOMAIN
@@ -36,6 +40,13 @@ _TRANSLATE_ESCAPE_DIRNAME = str.maketrans(
   "|.+!()+_|"
 )
 
+
+def retry_when(errors):
+  def handler(self, cnt, err):
+    sleep(_DEFAULT_TIME_INTERVAL * random())
+    self.__exit__()  # Reset
+
+  return retry(errors, 0xffff, handler)
 
 def url_generator(elems, attr="href"):
   """
@@ -111,6 +122,7 @@ class Nhget(object):
       self._msg2("sleep %0.2f" % wait_time)
       time.sleep(wait_time)
 
+  @retry_when((RequestException,))
   def _download(self, caption, urls):
     """
     @param urls: list
@@ -138,7 +150,6 @@ class Nhget(object):
         continue
 
       dic = matched.groupdict()
-      page_num = int(dic["page_num"])
       self._msg2("[%4d / %-4d]" % (curr_count, page_count))
       url = _FMT_ORIGIN_IMAGE_URL.format(**dic)
 
@@ -161,6 +172,7 @@ class Nhget(object):
 
     os.chdir(self._cwd)
 
+  @retry_when((RequestException,))
   def _visit(self, url, **kwargs):
     """
     @param url: str
