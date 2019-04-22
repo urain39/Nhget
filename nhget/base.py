@@ -5,7 +5,7 @@ import re
 import sys
 import time
 from copy import deepcopy
-from random import choice as choice, random, randrange
+from random import random, randint, randrange
 from bs4 import BeautifulSoup
 from ezreq import EzReq as HttpClient
 
@@ -29,7 +29,7 @@ _DEFAULT_HEADERS = {
 }
 _DEFAULT_TIMEOUT = 60
 _DEFAULT_BUFSIZE = (1 << 20)  # 1MB
-_DEFAULT_TIME_INTERVAL = (0, 5)
+_DEFAULT_TIME_INTERVAL = 5
 
 _TRANSLATE_ESCAPE_DIRNAME = str.maketrans(
   "/:*?<>#=\\",  # NOTE: Do not use `r` prefix here.
@@ -100,10 +100,10 @@ class Nhget(object):
     return thumb_urls
 
   def _wait(self, multiple=1):
-    if choice((True, False, False, False)):
-    # if choice((True, True, False)):
+    # 66% to choice waiting
+    if randint(0, 0xffff) % 3 in (0, 1):
       # NOTE: range is indexable
-      wait_time = choice(range(*_DEFAULT_TIME_INTERVAL)) + random()
+      wait_time = _DEFAULT_TIME_INTERVAL * random()
       wait_time = wait_time * multiple
 
       self._msg2("sleep %0.2f" % wait_time)
