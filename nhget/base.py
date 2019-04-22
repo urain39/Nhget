@@ -5,7 +5,7 @@ import re
 import sys
 import time
 from copy import deepcopy
-from random import random, randint, randrange
+from random import random, randrange
 from bs4 import BeautifulSoup
 from ezreq import EzReq as HttpClient
 
@@ -101,7 +101,7 @@ class Nhget(object):
 
   def _wait(self, multiple=1):
     # 66% to choice waiting
-    if randint(0, 0xffff) % 3 in (0, 1):
+    if randrange(0, 3) in (0, 1):
       # NOTE: range is indexable
       wait_time = _DEFAULT_TIME_INTERVAL * random()
       wait_time = wait_time * multiple
