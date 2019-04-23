@@ -122,7 +122,6 @@ class Nhget(object):
       self._msg2("sleep %0.2f" % wait_time)
       time.sleep(wait_time)
 
-  @retry_when((RequestException,))
   def _download(self, caption, urls):
     """
     @param urls: list
@@ -181,6 +180,7 @@ class Nhget(object):
     resp = self._http.visit(url, **kwargs)
     return resp.text
 
+  @retry_when((RequestException,))
   def handle_gallery(self, url):
     """
     @param gallery: tuple
