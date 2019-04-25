@@ -55,8 +55,17 @@ _TRANSLATE_ESCAPE_DIRNAME = str.maketrans(
 )
 
 
+# Magic! XD
+def yes_or_no(n, cnt):
+  return randrange(0, cnt) < n
+
 def retry_when(errors):
   def handler(self, cnt, err):
+    if self._curr_imgname:
+      # We has crashed :(
+      os.remove(self._curr_imgname)
+      self._curr_imgname = None
+
     time.sleep(_DEFAULT_TIME_INTERVAL * random())
     self.__exit__()  # Reset
 
@@ -77,10 +86,7 @@ def url_generator(elems, attr="href"):
     if url:
       yield url
 
-def yes_or_no(n, cnt):
-  return randrange(0, cnt) < n
-
-# Alias constructor of BeautifulSoup with self arguments
+# Alias constructor of BeautifulSoup with custom arguments
 # You can modify the default parser to lxml or else here...
 def Soup(markup, features="html.parser", **kwargs):  # pylint: disable=invalid-name
   return BeautifulSoup(markup, features, **kwargs)
@@ -90,6 +96,7 @@ class Nhget(object):
   def __init__(self):
     self._cwd = os.getcwd()
     self._http = HttpClient(_BASE_URL, headers=choice(_DEFAULT_HEADERS_LIST), max_retries=3)
+    self._curr_imgname = None  # The backup of processing imgname for retry
 
     # Simulate Browser
     self._http.session.get("{0}/favicon.ico".format(_BASE_URL))
@@ -181,6 +188,7 @@ class Nhget(object):
          continue
 
       is_wait = True
+      self._curr_imgname = imgname  # Backup processing imgname
       resp = session.get(url, stream=True, timeout=_DEFAULT_TIMEOUT)
       with open(imgname, "wb") as fp:  # pylint: disable=invalid-name
         for data in resp.iter_content(chunk_size=_DEFAULT_BUFSIZE):
