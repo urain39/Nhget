@@ -4,8 +4,7 @@ import os
 import re
 import sys
 import time
-from copy import deepcopy
-from random import random, randrange
+from random import choice, random, randrange
 from bs4 import BeautifulSoup
 from requests.exceptions import RequestException
 from ezreq import EzReq as HttpClient
@@ -28,12 +27,27 @@ _ORIGIN_SUBDOMAIN = "i"
 _RE_THUMB_IMAGE_URL = re.compile(r"^(?P<protocol>(?:ht|f)tps?\:)\/\/" + _THUMB_SUBDOMAIN + r"\." + _DOMAIN + r"/galleries/(?P<gallery_id>[0-9]+)/(?P<page_num>[0-9]+)" + _THUMB_SUFFIX + r"\.(?P<file_ext>bmp|gif|jpg|png)$")
 _FMT_ORIGIN_IMAGE_URL = r"{protocol}//" + _ORIGIN_SUBDOMAIN + r"." + _DOMAIN + r"/galleries/{gallery_id}/{page_num}.{file_ext}"
 
-_DEFAULT_HEADERS = {
-  "User-Agent": "Mozilla/5.0 (Linux; Android 8.1.1; uPackMan P02) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.99 Mobile Safari/537.36"  # + " (I am robot)"
-}
+_DEFAULT_HEADERS_LIST = [
+  # IE11
+  {
+    "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko"  # + " (I am robot)"
+  },
+  # Chrome72
+  {
+    "User-Agent": "Mozilla/5.0 (X11; U; Linux X86_64; en-US) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/72.0.3626.105 Safari/537.36"
+  },
+  # Chrome71(Mobile)
+  {
+    "User-Agent": "Mozilla/5.0 (Linux; Android 8.1.1; OPPO A72) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.99 Mobile Safari/537.36"
+  },
+  # Chrome72(Mobile | Webview)
+  {
+    "User-Agent": "Mozilla/5.0 (Linux; Android 7.1.2; Mi5 Build/NJH47F; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/72.0.3626.105 Mobile Safari/537.36"
+  }
+]
 _DEFAULT_TIMEOUT = 60
 _DEFAULT_BUFSIZE = (1 << 20)  # 1MB
-_DEFAULT_TIME_INTERVAL = 5
+_DEFAULT_TIME_INTERVAL = 20
 
 _TRANSLATE_ESCAPE_DIRNAME = str.maketrans(
   "/:*?<>#=\\",  # NOTE: Do not use `r` prefix here.
@@ -46,7 +60,10 @@ def retry_when(errors):
     time.sleep(_DEFAULT_TIME_INTERVAL * random())
     self.__exit__()  # Reset
 
-  return retry(errors, 0xffff, handler, True)
+    if yes_or_no(7, 10):
+      self.__init__()  # try switch user-agent
+
+  return retry(errors, max_count=0xffff, callback=handler, is_method=True)
 
 def url_generator(elems, attr="href"):
   """
@@ -72,7 +89,7 @@ def Soup(markup, features="html.parser", **kwargs):  # pylint: disable=invalid-n
 class Nhget(object):
   def __init__(self):
     self._cwd = os.getcwd()
-    self._http = HttpClient(_BASE_URL, headers=deepcopy(_DEFAULT_HEADERS), max_retries=3)
+    self._http = HttpClient(_BASE_URL, headers=choice(_DEFAULT_HEADERS_LIST), max_retries=3)
 
     # Simulate Browser
     self._http.session.get("{0}/favicon.ico".format(_BASE_URL))
