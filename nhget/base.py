@@ -143,7 +143,6 @@ class Nhget(object):
 
   def _wait(self, multiple=1):
     if yes_or_no(2, 9):
-      # NOTE: range is indexable
       wait_time = _DEFAULT_TIME_INTERVAL * random()
       wait_time = wait_time * multiple
 
@@ -166,7 +165,7 @@ class Nhget(object):
 
     os.chdir(caption)
 
-    is_wait = True
+    is_wait = False
     while len(urls) > 0:
       idx = randrange(0, len(urls))
       url = urls.pop(idx)
