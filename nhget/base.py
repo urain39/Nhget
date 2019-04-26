@@ -62,7 +62,7 @@ def yes_or_no(n, cnt):
 def retry_when(errors):
   def handler(self, cnt, err):
     if self._curr_imgname:
-      # We has crashed :(
+      # We have crashed :(
       os.remove(self._curr_imgname)
       self._curr_imgname = None
 
