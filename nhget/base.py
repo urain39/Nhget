@@ -63,7 +63,11 @@ def retry_when(errors):
   def handler(self, cnt, err):
     if self._curr_imgname:
       # We has crashed :(
-      os.remove(self._curr_imgname)
+      try:
+        os.remove(self._curr_imgname)
+      except FileNotFoundError as e:
+        pass
+
       self._curr_imgname = None
 
     time.sleep(_DEFAULT_TIME_INTERVAL * random())
