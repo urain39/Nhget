@@ -196,6 +196,8 @@ class Nhget(object):
       with open(imgname, "wb") as fp:  # pylint: disable=invalid-name
         for data in resp.iter_content(chunk_size=_DEFAULT_BUFSIZE):
           fp.write(data)
+      # Fix: sometimes when `self._visit` failed will delete part of the last one.
+      self._curr_imgname = None
 
     os.chdir(self._cwd)
 
