@@ -62,7 +62,7 @@ def yes_or_no(n, cnt):
 def retry_when(errors):
   def handler(self, cnt, err):
     if self._curr_imgname:
-      # We has crashed :(
+      # We have crashed :(
       try:
         os.remove(self._curr_imgname)
       except FileNotFoundError as e:
@@ -103,7 +103,11 @@ class Nhget(object):
     self._curr_imgname = None  # The backup of processing imgname for retry
 
     # Simulate Browser
-    self._http.session.get("{0}/favicon.ico".format(_BASE_URL))
+    if yes_or_no(1, 20):
+      try:
+        self._http.session.get("{0}/favicon.ico".format(_BASE_URL))
+      except RequestException as e:
+        pass
 
   def __enter__(self):
     return self
@@ -186,9 +190,9 @@ class Nhget(object):
       imgname = "{page_num:06}.{file_ext}".format(**dic)
 
       if os.path.isfile(imgname):
-         self._msg2("skip %s" % imgname)
-         is_wait = False
-         continue
+        self._msg2("skip %s" % imgname)
+        is_wait = False
+        continue
 
       is_wait = True
       self._curr_imgname = imgname  # Backup processing imgname
