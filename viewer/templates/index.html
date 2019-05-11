@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+<!-- Overwrite the default title. -->
+{% if title %}
+  {% block title %}
+    {{title}}
+  {% endblock %}
+{% endif %}
+
+{% block body %}
+  This is index page!
+  <!-- {{ super() }} -->
+{% endblock %}
+

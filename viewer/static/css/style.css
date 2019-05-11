@@ -1,0 +1,44 @@
+/*
+ * Copyright (c) 2019 urian39 <urain39@qq.com>
+ */
+
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  color: #f0f0f0;
+  background: #22222f;
+}
+
+.pull-left {
+  float: left;
+}
+
+.pull-right {
+  float: right;
+}
+
+.hide {
+  display: none;
+}
+
+.container {
+  height: 31%;
+  width: 100%;
+  padding: 1%;
+  overflow-x: hidden;
+}
+
+#head-container {
+
+}
+
+#main-container {
+
+}
+
+#foot-container {
+
+}
+
