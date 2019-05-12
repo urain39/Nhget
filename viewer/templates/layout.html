@@ -1,4 +1,4 @@
-<!DOCTYPE>
+<!DOCTYPE html>
 <html>
   <head>
     <title>
@@ -6,17 +6,24 @@
         The Nhget Viwer | Powered by Flask.
       {% endblock %}
     </title>
+    <meta charset="utf-8" />
+    <meta name="author" content="urain39" />
+    <meta name="keywords" content="Booru, TinyBooru, SafeBooru" />
+    <meta name="description" content="The Nhget Viewer" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, width=device-width">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+     <link rel="stylesheet" href="{{ url_for('static', filename='css/nes.min.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
   </head>
   <body>
     <!-- header begin -->
-    <div class="container" id="head-container">
+    <div class="nes-container" id="head-container">
       {% include "header.html" %}
     </div>
     <!-- header end -->
 
     <!-- main begin -->
-    <div class="container" id="main-container">
+    <div class="nes-container" id="main-container">
       {% block main %}
         <p>Something was wrong :(</p>
       {% endblock %}
@@ -24,7 +31,7 @@
     <!-- main end -->
 
     <!-- footer begin -->
-    <div class="container" id="foot-container">
+    <div class="nes-container" id="foot-container">
       {% include "footer.html" %}
     </div>
     <!-- footer end -->
