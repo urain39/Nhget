@@ -15,7 +15,7 @@ def index():
     return render_template('index.html')
 
 @app.route('/post/<caption>', methods=['GET'])
-def post():
+def post(caption=None):
     return render_template('post.html', caption=caption)
 
 @app.route('/about', methods=['GET'])

@@ -1,7 +1,17 @@
 {% extends "layout.html" %}
 
 {% if caption %}
-  {% block caption%}
-    {{caption}}
+  {% block title %}
+    {{ caption }}
   {% endblock %}
 {% endif %}
+
+{% block main %}
+  {#<div class="page-viewer">
+    <a href="{{page.src}}">
+      <img src="{page.src}" />
+    </a>
+  </div>#}
+<button class="control-key" id="control-prev">Prev</button>
+<button class="control-key" id="control-next">Next</button>
+{% endblock %}

@@ -3,11 +3,11 @@
 <!-- Overwrite the default title. -->
 {% if title %}
   {% block title %}
-    {{title}}
+    {{ title }}
   {% endblock %}
 {% endif %}
 
-{% block body %}
+{% block main %}
   This is index page!
   <!-- {{ super() }} -->
 {% endblock %}
