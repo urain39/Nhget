@@ -18,7 +18,7 @@ _BASE_URL = "https://" + _DOMAIN
 _COVER_PATH = "div.container.index-container > .gallery > a.cover"
 _THUMB_PATH = "div.container#thumbnail-container > div.thumb-container > a.gallerythumb > img.lazyload[is='lazyload-image']"
 _CAPTION_PATH_EN = "div.container#bigcontainer > div#info-block > div#info > h1"
-_CAPTION_PATH_JP = "div.container#bigcontainer > div#info-block > div#info > h2"
+_CAPTION_PATH_JA = "div.container#bigcontainer > div#info-block > div#info > h2"
 
 _THUMB_SUFFIX = "t"
 _THUMB_SUBDOMAIN = "t"
@@ -221,7 +221,7 @@ class Nhget(object):
     """
     html = self._visit(url)
     dom = Soup(html)  # pylint: disable=invalid-name
-    caption = (dom.select(_CAPTION_PATH_JP) or
+    caption = (dom.select(_CAPTION_PATH_JA) or
                dom.select(_CAPTION_PATH_EN))[0].text
     thumb_urls = self._query_image(html)
 
