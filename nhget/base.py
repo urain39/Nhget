@@ -217,7 +217,7 @@ class Nhget(object):
   @retry_when((RequestException,))
   def handle_gallery(self, url):
     """
-    @param gallery: tuple
+    @param url: str
     """
     html = self._visit(url)
     dom = Soup(html)  # pylint: disable=invalid-name
