@@ -6,22 +6,14 @@ def retry(errors, max_count=3, callback=None, is_method=False):
   @param max_count: optional, the max retry count
   @param callback: optional, be called with `retry count` before retry
   @param is_method: optional, useful when you want to wrap a method
-
   Examples:
     @retry(ZeroDivisionError, 3,
            lambda cnt, err: print(cnt, err))
     def _():
       0/0
-
     _()
   """
-  # NOTE: This is a bug on CPython closure,
-  #       the name of the variable in the sub
-  #       function is just a value, so we can
-  #       only use it as a pointer(list)...
 
-  # count = 0
-  count = [0]
   # pylint: disable=invalid-name
   def fn_wrapper(fn):
     @wraps(fn)
@@ -31,19 +23,20 @@ def retry(errors, max_count=3, callback=None, is_method=False):
       if is_method:
         self = args[0]
 
+      count = 0
       while True:
         try:
-          count[0] += 1
+          count += 1
           result = fn(*args, **kwargs)
           break
         # pylint: disable=invalid-name
         except errors as err:
-          if count[0] <= max_count:
+          if count <= max_count:
             if callable(callback):
               if is_method:
-                callback(self, count[0], err)
+                callback(self, count, err)
               else:  # function
-                callback(count[0], err)
+                callback(count, err)
 
             continue
           else:

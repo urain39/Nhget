@@ -1,6 +1,4 @@
-from time import sleep
 from nhget import Nhget
-from random import random
 
 N = Nhget()
 
